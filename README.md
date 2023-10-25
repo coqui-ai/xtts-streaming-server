@@ -10,7 +10,7 @@ $ docker build -t xtts-stream .
 2. Run the server container:
 
 ```bash
-$ docker run --gpus=all -e COQUI_TOS_AGREED=1 --rm -p 80:80 xtts-stream
+$ docker run --gpus=all -e COQUI_TOS_AGREED=1 --rm -p 8000:80 xtts-stream
 ```
 
 Setting the `COQUI_TOS_AGREED` environment variable to `1` indicates you have read and agreed to
