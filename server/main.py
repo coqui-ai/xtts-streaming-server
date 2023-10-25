@@ -1,37 +1,22 @@
-import io, os, time, sys, signal
-import json, yaml
 import base64
-
-from fastapi import (
-    FastAPI,
-    File,
-    Body,
-    UploadFile,
-    Request,
-    Response,
-    status,
-)
-from fastapi.responses import StreamingResponse
-
+import io
+import os
 import tempfile
-import asyncio
-from fastapi.responses import JSONResponse, PlainTextResponse
-from starlette.status import HTTP_504_GATEWAY_TIMEOUT
-from anyio.lowlevel import RunVar
-from anyio import CapacityLimiter
-from exceptiongroup import ExceptionGroup, BaseExceptionGroup
-from exceptiongroup import catch as catch_exception_group
-
-from TTS.tts.configs.xtts_config import XttsConfig
-from TTS.tts.models.xtts import Xtts
-from TTS.utils.manage import ModelManager
-from TTS.utils.generic_utils import get_user_data_dir
+from typing import List, Literal
+import wave
 
 import numpy as np
-import torchaudio
 import torch
-import time
-import wave
+from fastapi import (
+    FastAPI,
+    UploadFile,
+)
+from pydantic import BaseModel
+from fastapi.responses import StreamingResponse
+from TTS.tts.configs.xtts_config import XttsConfig
+from TTS.tts.models.xtts import Xtts
+from TTS.utils.generic_utils import get_user_data_dir
+from TTS.utils.manage import ModelManager
 
 torch.set_num_threads(8)
 device = torch.device("cuda")
@@ -48,59 +33,27 @@ model.to(device)
 
 ##### Run fastapi #####
 app = FastAPI(
-    title="XTTS Multilang streaming Fastapi",
-    description="""XTTS Multilang streaming Fastapi""",
+    title="XTTS Streaming server",
+    description="""XTTS Streaming server""",
     version="0.0.1",
     docs_url="/",
 )
 
-##################### MIDDLEWARE ######################################
 
-@app.on_event("startup")
-async def startup():
-    print("Fastapi startup...")
-    thread_limit = int(os.getenv("THREAD_LIMIT", 8))
-    RunVar("_default_thread_limiter").set(CapacityLimiter(8))
-
-
-def limit_one_at_a_time(f):
-    async def wrapper(*args, **kwargs):
-        async with limit_semaphore:
-            return await f(*args, **kwargs)
-    return wrapper
-
-# For streaming we put semaphore inside the stream_handler
-async def stream_handler(gen):
-    async with limit_semaphore:
-        # Will wrap into streamer to catch cancel events
-        try:
-            for i in gen:
-                yield i
-                # To enable request canceling we need a little timeout here or it just processes on cancel
-                #await asyncio.sleep(0.005)
-            # Clear cache or VRAM usage keeps growing
-            torch.cuda.empty_cache()
-        except asyncio.CancelledError:
-            print("Request cancelled.")
-            # Clear cache or VRAM usage keeps growing
-            torch.cuda.empty_cache()
-
-@limit_one_at_a_time
-@app.post("/predict_speaker")
+@app.post("/clone_speaker")
 async def predict_speaker(wav_file: UploadFile):
     """Compute conditioning inputs from reference audio file."""
     temp_audio_name = next(tempfile._get_candidate_names())
     with open(temp_audio_name, "wb") as temp, torch.inference_mode():
         temp.write(io.BytesIO(wav_file.file.read()).getbuffer())
-        gpt_cond_latent, _, speaker_embedding = model.get_conditioning_latents(temp_audio_name)
+        gpt_cond_latent, _, speaker_embedding = model.get_conditioning_latents(
+            temp_audio_name
+        )
     return {
         "gpt_cond_latent": gpt_cond_latent.cpu().squeeze().half().tolist(),
         "speaker_embedding": speaker_embedding.cpu().squeeze().half().tolist(),
     }
 
-##############################
-### GPT STREAMING
-##############################
 
 def postprocess(wav):
     """Post process the output waveform"""
@@ -111,6 +64,7 @@ def postprocess(wav):
     wav = np.clip(wav, -1, 1)
     wav = (wav * 32767).astype(np.int16)
     return wav
+
 
 def encode_audio_common(
     frame_input, encode_base64=True, sample_rate=24000, sample_width=2, channels=1
@@ -130,29 +84,55 @@ def encode_audio_common(
     else:
         return wav_buf.read()
 
-async def predict_streaming(parsed_input: dict = Body(...)):
-    speaker_embedding = torch.tensor(parsed_input["speaker_embedding"]).unsqueeze(0).unsqueeze(-1)
-    gpt_cond_latent = torch.tensor(parsed_input["gpt_cond_latent"]).reshape((-1,1024)).unsqueeze(0)
-    text = parsed_input["text"]
-    language = parsed_input["language"]
 
-    sample_width = int(parsed_input.get("sample_width", 2))
-    add_wav_header = int(parsed_input.get("add_wav_header", 1))
+class StreamingInputs(BaseModel):
+    speaker_embedding: List[float]
+    gpt_cond_latent: List[List[float]]
+    text: str
+    language: Literal[
+        "en",
+        "de",
+        "fr",
+        "es",
+        "it",
+        "pl",
+        "pt",
+        "tr",
+        "ru",
+        "nl",
+        "cs",
+        "ar",
+        "zh-cn",
+        "ja",
+    ]
+    add_wav_header: bool = True
+
+
+async def predict_streaming_generator(parsed_input: StreamingInputs):
+    speaker_embedding = (
+        torch.tensor(parsed_input.speaker_embedding).unsqueeze(0).unsqueeze(-1)
+    )
+    gpt_cond_latent = (
+        torch.tensor(parsed_input.gpt_cond_latent).reshape((-1, 1024)).unsqueeze(0)
+    )
+    text = parsed_input.text
+    language = parsed_input.language
+
+    add_wav_header = parsed_input.add_wav_header
 
     chunks = model.inference_stream(text, language, gpt_cond_latent, speaker_embedding)
     for i, chunk in enumerate(chunks):
         chunk = postprocess(chunk)
-        if i == 0 and add_wav_header :
-            yield encode_audio_common(
-                b"", encode_base64=False, sample_width=sample_width
-            )
+        if i == 0 and add_wav_header:
+            yield encode_audio_common(b"", encode_base64=False)
             yield chunk.tobytes()
         else:
             yield chunk.tobytes()
 
-@app.post("/predict_streaming")
-def predict_streaming_endpoint(parsed_input: dict = Body(...)):
+
+@app.post("/tts_stream")
+def predict_streaming_endpoint(parsed_input: StreamingInputs):
     return StreamingResponse(
-        predict_streaming(parsed_input),
+        predict_streaming_generator(parsed_input),
         media_type="audio/wav",
     )
