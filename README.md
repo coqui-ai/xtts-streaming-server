@@ -20,5 +20,6 @@ the terms of the [CPML license](https://coqui.ai/cpml).
 
 ```bash
 $ cd test
+$ python -m pip install -r requirements.txt
 $ python test_streaming.py
 ```
