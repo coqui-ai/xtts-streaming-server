@@ -1,0 +1,6 @@
+TTS==0.18.2
+uvicorn[standard]==0.23.2
+fastapi==0.104.0
+deepspeed==0.8.3
+pydantic==1.10.13
+python-multipart==0.0.6
