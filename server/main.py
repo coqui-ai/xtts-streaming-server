@@ -28,7 +28,7 @@ model_path = os.path.join(get_user_data_dir("tts"), model_name.replace("/", "--"
 config = XttsConfig()
 config.load_json(os.path.join(model_path, "config.json"))
 model = Xtts.init_from_config(config)
-model.load_checkpoint(config, checkpoint_dir=model_path, eval=True, use_deepspeed=False)
+model.load_checkpoint(config, checkpoint_dir=model_path, eval=True, use_deepspeed=True)
 model.to(device)
 
 ##### Run fastapi #####
