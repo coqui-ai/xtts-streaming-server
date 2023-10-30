@@ -123,10 +123,15 @@ async def predict_streaming_generator(parsed_input: StreamingInputs):
     )
     text = parsed_input.text
     language = parsed_input.language
+    decoder = parsed_input.get("decoder", "ne_hifigan")
 
+    if decoder not in ["ne_hifigan","hifigan"]:
+        decoder = "ne_hifigan"
+
+    stream_chunk_size = int(parsed_input.get("stream_chunk_size", "20"))
     add_wav_header = parsed_input.add_wav_header
 
-    chunks = model.inference_stream(text, language, gpt_cond_latent, speaker_embedding)
+    chunks = model.inference_stream(text, language, gpt_cond_latent, speaker_embedding, decoder=decoder,stream_chunk_size=stream_chunk_size)
     for i, chunk in enumerate(chunks):
         chunk = postprocess(chunk)
         if i == 0 and add_wav_header:
