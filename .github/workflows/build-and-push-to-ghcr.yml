@@ -41,6 +41,6 @@ jobs:
           push: true # Push if merged
           cache-from: type=registry,ref=ghcr.io/coqui-ai/xtts-streaming-server:cache-latest
           cache-to: type=registry,ref=ghcr.io/coqui-ai/xtts-streaming-server:cache-latest
-          tags: coqui-ai/xtts-streaming-server:latest, coqui-ai/xtts-streaming-server:${{ env.RELEASE_VERSION }}-${{ github.sha }}
+          tags: coqui-ai/xtts-streaming-server:latest, coqui-ai/xtts-streaming-server:main-${{ github.sha }}
           #build-args:
 
