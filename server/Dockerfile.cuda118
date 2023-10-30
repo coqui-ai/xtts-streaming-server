@@ -1,0 +1,13 @@
+FROM pytorch/pytorch:2.1.0-cuda11.8-cudnn8-devel
+WORKDIR /app
+COPY requirements.frozen.txt .
+RUN python -m pip install --no-deps -r requirements.frozen.txt
+
+COPY main.py .
+
+#Mark this 1 if you have older card
+ENV NVIDIA_DISABLE_REQUIRE=0
+
+ENV NUM_THREADS=8
+EXPOSE 80
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80"]

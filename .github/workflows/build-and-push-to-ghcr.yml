@@ -42,3 +42,14 @@ jobs:
           tags: ghcr.io/coqui-ai/xtts-streaming-server:latest, ghcr.io/coqui-ai/xtts-streaming-server:main-${{ github.sha }}
           #build-args:
 
+      - name: Build and Push image cuda 11.8
+        if: github.ref == 'refs/heads/main'
+        uses: docker/build-push-action@v5
+        with:
+          context: "{{defaultContext}}:server"
+          file: Dockerfile.cuda118
+          push: true # Push if merged
+          cache-from: type=registry,ref=ghcr.io/coqui-ai/xtts-streaming-server:cache-latest-cuda118
+          cache-to: type=registry,ref=ghcr.io/coqui-ai/xtts-streaming-server:cache-latest-cuda118
+          tags: ghcr.io/coqui-ai/xtts-streaming-server:latest-cuda118, ghcr.io/coqui-ai/xtts-streaming-server:main-cuda118-${{ github.sha }}
+          #build-args:

@@ -2,10 +2,15 @@
 
 ## Running the server
 
-To run a pre-built container:
+To run a pre-built container (CUDA 11.7):
 
 ```bash
 $ docker run --gpus=all -e COQUI_TOS_AGREED=1 --rm -p 8000:80 ghcr.io/coqui-ai/xtts-streaming-server:latest
+```
+
+CUDA 11.8 version (for newer cards)
+```bash
+$ docker run --gpus=all -e COQUI_TOS_AGREED=1 --rm -p 8000:80  ghcr.io/coqui-ai/xtts-streaming-server:latest-cuda118
 ```
 
 Setting the `COQUI_TOS_AGREED` environment variable to `1` indicates you have read and agreed to
