@@ -4,3 +4,4 @@ fastapi==0.95.2
 deepspeed==0.10.3
 pydantic==1.10.13
 python-multipart==0.0.6
+typing-extensions>=4.8.0
