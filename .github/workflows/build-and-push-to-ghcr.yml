@@ -34,7 +34,7 @@ jobs:
         if: github.ref != 'refs/heads/main'
         uses: docker/build-push-action@v5
         with:
-          context: server
+          context: "{{defaultContext}}:server"
           file: Dockerfile
           push: false
           cache-from: type=registry,ref=ghcr.io/coqui-ai/xtts-streaming-server:latest
@@ -46,7 +46,7 @@ jobs:
         if: github.ref == 'refs/heads/main'
         uses: docker/build-push-action@v5
         with:
-          context: server
+          context: "{{defaultContext}}:server"
           file: Dockerfile
           push: false
           cache-from: type=registry,ref=ghcr.io/coqui-ai/xtts-streaming-server:latest
