@@ -42,6 +42,13 @@ jobs:
           tags: ghcr.io/coqui-ai/xtts-streaming-server:latest, ghcr.io/coqui-ai/xtts-streaming-server:main-${{ github.sha }}
           #build-args:
 
+      - name: 'Remove cache'
+        run: | 
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf "/usr/local/share/boost"
+          sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+
       - name: Build and Push image cuda 11.8
         if: github.ref == 'refs/heads/main'
         uses: docker/build-push-action@v5
