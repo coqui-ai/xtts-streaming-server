@@ -6,6 +6,6 @@ RUN python -m pip install --no-deps -r requirements.frozen.txt \
 
 COPY main.py .
 
-ENV NUM_THREADS=8
+ENV NUM_THREADS=2
 EXPOSE 80
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80"]
