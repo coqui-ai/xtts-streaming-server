@@ -1,0 +1,14 @@
+FROM pytorch/pytorch:2.1.0-cuda12.1-cudnn8-devel
+WORKDIR /app
+COPY requirements.txt .
+RUN python -m pip install --use-deprecated=legacy-resolver -r requirements.txt \
+    && python -m pip cache purge
+
+COPY main.py .
+
+#Mark this 1 if you have older card
+ENV NVIDIA_DISABLE_REQUIRE=0
+
+ENV NUM_THREADS=2
+EXPOSE 80
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80"]
