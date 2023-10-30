@@ -33,8 +33,8 @@ jobs:
       - name: Build only for PR
         if: github.ref != 'refs/heads/main'
         uses: docker/build-push-action@v5
-        working-directory: ./server
         with:
+          working-directory: ./server
           file: Dockerfile
           push: false
           cache-from: type=registry,ref=ghcr.io/coqui-ai/xtts-streaming-server:latest
@@ -45,8 +45,8 @@ jobs:
       - name: Build and Push image
         if: github.ref == 'refs/heads/main'
         uses: docker/build-push-action@v5
-        working-directory: ./server
         with:
+          working-directory: ./server
           file: Dockerfile
           push: false
           cache-from: type=registry,ref=ghcr.io/coqui-ai/xtts-streaming-server:latest
