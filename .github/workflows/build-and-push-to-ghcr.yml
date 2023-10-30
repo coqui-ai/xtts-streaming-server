@@ -34,8 +34,8 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           file: server/Dockerfile
-          push: true
+          push: ${{ env.RELEASE_VERSION }}=="main"
           cache-from: type=registry,ref=ghcr.io/coqui-ai/xtts-streaming-server:latest
           cache-to: type=registry,ref=ghcr.io/coqui-ai/xtts-streaming-server:latest
-          tags: coqui-ai/xtts-streaming-server:latest, ${{ GHCR_URL }}:${{ env.RELEASE_VERSION }}-${{ github.sha }}
+          tags: coqui-ai/xtts-streaming-server:latest
           #build-args:
