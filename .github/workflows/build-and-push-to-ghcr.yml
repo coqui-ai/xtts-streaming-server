@@ -9,6 +9,10 @@ jobs:
   build-and-push-to-ghcr:
     runs-on: ubuntu-22.04
     steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v3
+
       - name: Set Release version
         shell: bash
         run: |
@@ -34,7 +38,7 @@ jobs:
         if: github.ref != 'refs/heads/main'
         uses: docker/build-push-action@v5
         with:
-          context: "{{defaultContext}}:server"
+          context: server #directory
           file: Dockerfile
           push: false
           cache-from: type=registry,ref=ghcr.io/coqui-ai/xtts-streaming-server:latest
@@ -46,7 +50,7 @@ jobs:
         if: github.ref == 'refs/heads/main'
         uses: docker/build-push-action@v5
         with:
-          context: "{{defaultContext}}:server"
+          context: server #directory
           file: Dockerfile
           push: false
           cache-from: type=registry,ref=ghcr.io/coqui-ai/xtts-streaming-server:latest
