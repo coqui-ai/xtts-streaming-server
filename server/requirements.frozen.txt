@@ -131,13 +131,6 @@ tensorboard-data-server==0.7.2
 threadpoolctl==3.2.0
 tifffile==2023.9.26
 tokenizers==0.13.3
-torch==2.0.1
-torchaudio==2.0.2
-torchdiffeq==0.2.3
-torchelastic==0.2.2
-torchsde==0.2.6
-torchtext==0.15.2
-torchvision==0.15.2
 tqdm==4.64.1
 trainer==0.0.31
 trampoline==0.1.2
