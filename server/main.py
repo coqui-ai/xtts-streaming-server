@@ -22,18 +22,20 @@ torch.set_num_threads(int(os.environ.get("NUM_THREADS", "8")))
 device = torch.device("cuda")
 
 model_name = "tts_models/multilingual/multi-dataset/xtts_v1.1"
-print("Downloading XTTS Model:",model_name)
+print("Downloading XTTS Model:",model_name,flush=True)
 ModelManager().download_model(model_name)
 model_path = os.path.join(get_user_data_dir("tts"), model_name.replace("/", "--"))
-print("XTTS Model downloaded")
+print("XTTS Model downloaded",flush=True)
 
-print("Loading XTTS")
+print("Loading XTTS",flush=True)
 config = XttsConfig()
 config.load_json(os.path.join(model_path, "config.json"))
 model = Xtts.init_from_config(config)
 model.load_checkpoint(config, checkpoint_dir=model_path, eval=True, use_deepspeed=True)
 model.to(device)
-print("XTTS Loaded.")
+print("XTTS Loaded.",flush=True)
+
+print("Running XTTS Server ...",flush=True)
 
 ##### Run fastapi #####
 app = FastAPI(
