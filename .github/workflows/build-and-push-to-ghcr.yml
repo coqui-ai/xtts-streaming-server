@@ -1,12 +1,23 @@
 name: Build and push to GHCR
 on:
   push:
-    branches:
-      - 'main'
+    branches: [main]
+  pull_request:
+env:
+  GHCR_URL: ghcr.io/coqui-ai/xtts-streaming-server
 jobs:
   docker:
     runs-on: ubuntu-latest
     steps:
+      - name: Set Release version
+        shell: bash
+        run: |
+          if [[ "$GITHUB_EVENT_NAME" == "pull_request" ]]; then
+            echo "RELEASE_VERSION=dev" >> $GITHUB_ENV
+          else
+            echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+          fi 
+          export TAG=${GHCR_URL}:${{ env.RELEASE_VERSION }}-${{ github.sha }}
       -
         name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -26,5 +37,5 @@ jobs:
           push: true
           cache-from: type=registry,ref=ghcr.io/coqui-ai/xtts-streaming-server:latest
           cache-to: type=registry,ref=ghcr.io/coqui-ai/xtts-streaming-server:latest
-          tags: coqui-ai/xtts-streaming-server:latest
+          tags: coqui-ai/xtts-streaming-server:latest, $TAG
           #build-args:
