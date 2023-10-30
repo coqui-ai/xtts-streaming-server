@@ -18,18 +18,22 @@ from TTS.tts.models.xtts import Xtts
 from TTS.utils.generic_utils import get_user_data_dir
 from TTS.utils.manage import ModelManager
 
-torch.set_num_threads(8)
+torch.set_num_threads(int(os.environ.get("NUM_THREADS", "8")))
 device = torch.device("cuda")
 
 model_name = "tts_models/multilingual/multi-dataset/xtts_v1.1"
+print("Downloading XTTS Model:",model_name)
 ModelManager().download_model(model_name)
 model_path = os.path.join(get_user_data_dir("tts"), model_name.replace("/", "--"))
+print("XTTS Model downloaded")
 
+print("Loading XTTS")
 config = XttsConfig()
 config.load_json(os.path.join(model_path, "config.json"))
 model = Xtts.init_from_config(config)
 model.load_checkpoint(config, checkpoint_dir=model_path, eval=True, use_deepspeed=True)
 model.to(device)
+print("XTTS Loaded.")
 
 ##### Run fastapi #####
 app = FastAPI(

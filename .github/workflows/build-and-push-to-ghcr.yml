@@ -1,0 +1,46 @@
+name: Build and push to GHCR
+on:
+  push:
+    branches: [main]
+  pull_request:
+env:
+  GHCR_URL: ghcr.io/coqui-ai/xtts-streaming-server
+jobs:
+  build-and-push-to-ghcr:
+    runs-on: ubuntu-22.04
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v3
+
+      -
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: 'Login to GitHub Container Registry'
+        run: |
+          set -xe
+          docker login --username ${{ github.actor }} --password ${{ secrets.GITHUB_TOKEN }} ghcr.io
+
+      - name: Build only for PR
+        if: github.ref != 'refs/heads/main'
+        uses: docker/build-push-action@v5
+        with:
+          context: "{{defaultContext}}:server"
+          file: Dockerfile
+          push: false # Do not push image for PR
+          cache-from: type=registry,ref=ghcr.io/coqui-ai/xtts-streaming-server:cache-latest;type=registry,ref=ghcr.io/coqui-ai/xtts-streaming-server:cache-pr-${{ github.event.number }}
+          cache-to: type=registry,ref=ghcr.io/coqui-ai/xtts-streaming-server:cache-pr-${{ github.event.number }}
+
+      - name: Build and Push image
+        if: github.ref == 'refs/heads/main'
+        uses: docker/build-push-action@v5
+        with:
+          context: "{{defaultContext}}:server"
+          file: Dockerfile
+          push: true # Push if merged
+          cache-from: type=registry,ref=ghcr.io/coqui-ai/xtts-streaming-server:cache-latest
+          cache-to: type=registry,ref=ghcr.io/coqui-ai/xtts-streaming-server:cache-latest
+          tags: coqui-ai/xtts-streaming-server:latest, coqui-ai/xtts-streaming-server:${{ env.RELEASE_VERSION }}-${{ github.sha }}
+          #build-args:
+
