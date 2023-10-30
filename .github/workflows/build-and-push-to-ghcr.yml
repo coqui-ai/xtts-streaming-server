@@ -31,7 +31,7 @@ jobs:
           push: false # Do not push image for PR
           cache-from: type=registry,ref=ghcr.io/coqui-ai/xtts-streaming-server:cache-pr-${{ github.event.pull_request.head.sha }}
           cache-to: type=registry,ref=ghcr.io/coqui-ai/xtts-streaming-server:cache-pr-${{ github.event.pull_request.head.sha }}
-          tags: coqui-ai/xtts-streaming-server:${{ env.RELEASE_VERSION }}-${{ github.sha }}
+          tags: coqui-ai/xtts-streaming-server:pr-${{ github.event.pull_request.head.sha }}
           #build-args:
 
       - name: Build and Push image
