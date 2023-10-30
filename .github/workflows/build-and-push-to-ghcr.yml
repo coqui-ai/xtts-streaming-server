@@ -60,3 +60,22 @@ jobs:
           cache-to: type=registry,ref=ghcr.io/coqui-ai/xtts-streaming-server:cache-latest-cuda118
           tags: ghcr.io/coqui-ai/xtts-streaming-server:latest-cuda118, ghcr.io/coqui-ai/xtts-streaming-server:main-cuda118-${{ github.sha }}
           #build-args:
+
+      - name: 'Remove cache'
+        run: | 
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf "/usr/local/share/boost"
+          sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+
+      - name: Build and Push image cuda 12.1
+        if: github.ref == 'refs/heads/main'
+        uses: docker/build-push-action@v5
+        with:
+          context: "{{defaultContext}}:server"
+          file: Dockerfile.cuda121
+          push: true # Push if merged
+          cache-from: type=registry,ref=ghcr.io/coqui-ai/xtts-streaming-server:cache-latest-cuda121
+          cache-to: type=registry,ref=ghcr.io/coqui-ai/xtts-streaming-server:cache-latest-cuda121
+          tags: ghcr.io/coqui-ai/xtts-streaming-server:latest-cuda121, ghcr.io/coqui-ai/xtts-streaming-server:main-cuda121-${{ github.sha }}
+          #build-args:
