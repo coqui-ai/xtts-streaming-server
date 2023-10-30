@@ -30,7 +30,8 @@ jobs:
           set -xe
           docker login --username ${{ github.actor }} --password ${{ secrets.GITHUB_TOKEN }} ghcr.io
 
-      - name: Build and push
+      - name: Build only for PR
+        if: github.ref != 'refs/heads/main'
         uses: docker/build-push-action@v5
         with:
           file: ./server/Dockerfile
@@ -39,3 +40,15 @@ jobs:
           cache-to: type=registry,ref=ghcr.io/coqui-ai/xtts-streaming-server:latest
           tags: coqui-ai/xtts-streaming-server:latest
           #build-args:
+
+      - name: Build and Push image
+        if: github.ref == 'refs/heads/main'
+        uses: docker/build-push-action@v5
+        with:
+          file: server/Dockerfile
+          push: false
+          cache-from: type=registry,ref=ghcr.io/coqui-ai/xtts-streaming-server:latest
+          cache-to: type=registry,ref=ghcr.io/coqui-ai/xtts-streaming-server:latest
+          tags: coqui-ai/xtts-streaming-server:latest
+          #build-args:
+
