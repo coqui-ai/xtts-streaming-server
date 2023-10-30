@@ -1,6 +1,8 @@
-FROM pytorch/pytorch:2.0.1-cuda11.7-cudnn8-devel
+FROM pytorch/pytorch:2.1.0-cuda11.8-cudnn8-devel
 WORKDIR /app
 COPY requirements.txt .
+
+ARG PIP_CONFIG_FILE=pipconfig.conf
 RUN python -m pip install -r requirements.txt
 
 COPY main.py .
