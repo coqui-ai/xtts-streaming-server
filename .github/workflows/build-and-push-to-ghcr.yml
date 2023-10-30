@@ -23,9 +23,6 @@ jobs:
           fi 
           export TAG=${GHCR_URL}:${{ env.RELEASE_VERSION }}-${{ github.sha }}
       -
-        name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-      -
         name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -41,8 +38,8 @@ jobs:
           context: "{{defaultContext}}:server"
           file: Dockerfile
           push: false
-          cache-from: type=registry,ref=ghcr.io/coqui-ai/xtts-streaming-server:latest
-          cache-to: type=registry,ref=ghcr.io/coqui-ai/xtts-streaming-server:latest
+          cache-from: type=registry,ref=ghcr.io/coqui-ai/xtts-streaming-server:latest-cache
+          cache-to: type=registry,ref=ghcr.io/coqui-ai/xtts-streaming-server:latest-cache
           tags: coqui-ai/xtts-streaming-server:latest
           #build-args:
 
