@@ -29,8 +29,7 @@ jobs:
           context: "{{defaultContext}}:server"
           file: Dockerfile
           push: false # Do not push image for PR
-          cache-from: type=registry,ref=ghcr.io/coqui-ai/xtts-streaming-server:cache-latest
-          cache-from: type=registry,ref=ghcr.io/coqui-ai/xtts-streaming-server:cache-pr-${{ github.event.number }}
+          cache-from: type=registry,ref=ghcr.io/coqui-ai/xtts-streaming-server:cache-latest;type=registry,ref=ghcr.io/coqui-ai/xtts-streaming-server:cache-pr-${{ github.event.number }}
           cache-to: type=registry,ref=ghcr.io/coqui-ai/xtts-streaming-server:cache-pr-${{ github.event.number }}
 
       - name: Build and Push image
