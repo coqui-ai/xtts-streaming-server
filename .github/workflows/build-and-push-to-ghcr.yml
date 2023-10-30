@@ -7,7 +7,7 @@ env:
   GHCR_URL: ghcr.io/coqui-ai/xtts-streaming-server
 jobs:
   build-and-push-to-ghcr:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Set Release version
         shell: bash
@@ -33,7 +33,7 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
-          file: server/Dockerfile
+          file: ./server/Dockerfile
           push: false
           cache-from: type=registry,ref=ghcr.io/coqui-ai/xtts-streaming-server:latest
           cache-to: type=registry,ref=ghcr.io/coqui-ai/xtts-streaming-server:latest
