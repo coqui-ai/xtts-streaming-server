@@ -1,7 +1,8 @@
 FROM pytorch/pytorch:2.1.0-cuda11.8-cudnn8-devel
 WORKDIR /app
 COPY requirements.txt .
-RUN python -m pip install --use-deprecated=legacy-resolver -r requirements.txt
+RUN python -m pip install --use-deprecated=legacy-resolver -r requirements.txt \
+    && python -m pip cache purge
 
 COPY main.py .
 
