@@ -39,8 +39,7 @@ jobs:
           file: Dockerfile
           push: false
           cache-from: type=registry,ref=ghcr.io/coqui-ai/xtts-streaming-server:latest-cache
-          cache-to: type=registry,ref=ghcr.io/coqui-ai/xtts-streaming-server:latest-cache
-          tags: coqui-ai/xtts-streaming-server:latest
+          tags: coqui-ai/xtts-streaming-server:${{ env.RELEASE_VERSION }}-${{ github.sha }}
           #build-args:
 
       - name: Build and Push image
@@ -50,8 +49,8 @@ jobs:
           context: "{{defaultContext}}:server"
           file: Dockerfile
           push: false
-          cache-from: type=registry,ref=ghcr.io/coqui-ai/xtts-streaming-server:latest
-          cache-to: type=registry,ref=ghcr.io/coqui-ai/xtts-streaming-server:latest
+          cache-from: type=registry,ref=ghcr.io/coqui-ai/xtts-streaming-server:latest-cache
+          cache-to: type=registry,ref=ghcr.io/coqui-ai/xtts-streaming-server:latest-cache
           tags: coqui-ai/xtts-streaming-server:latest, coqui-ai/xtts-streaming-server:${{ env.RELEASE_VERSION }}-${{ github.sha }}
           #build-args:
 
