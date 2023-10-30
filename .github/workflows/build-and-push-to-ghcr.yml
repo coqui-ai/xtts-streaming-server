@@ -6,7 +6,7 @@ on:
 env:
   GHCR_URL: ghcr.io/coqui-ai/xtts-streaming-server
 jobs:
-  docker:
+  build-and-push-to-ghcr:
     runs-on: ubuntu-latest
     steps:
       - name: Set Release version
@@ -37,5 +37,5 @@ jobs:
           push: true
           cache-from: type=registry,ref=ghcr.io/coqui-ai/xtts-streaming-server:latest
           cache-to: type=registry,ref=ghcr.io/coqui-ai/xtts-streaming-server:latest
-          tags: coqui-ai/xtts-streaming-server:latest, $TAG
+          tags: coqui-ai/xtts-streaming-server:latest, ${GHCR_URL}:${{ env.RELEASE_VERSION }}-${{ github.sha }}
           #build-args:
