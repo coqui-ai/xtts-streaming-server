@@ -19,8 +19,6 @@ cachetools==5.3.2
 clean-fid==0.1.35
 click==8.1.7
 clip-anytorch==2.5.2
-conda==23.3.1
-conda-build==3.24.0
 contourpy==1.1.1
 coqpit==0.0.17
 cycler==0.12.1
