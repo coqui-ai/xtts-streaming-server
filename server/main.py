@@ -20,7 +20,7 @@ from TTS.tts.models.xtts import Xtts
 from TTS.utils.generic_utils import get_user_data_dir
 from TTS.utils.manage import ModelManager
 
-torch.set_num_threads(int(os.environ.get("NUM_THREADS", "8")))
+torch.set_num_threads(int(os.environ.get("NUM_THREADS", "2")))
 device = torch.device("cuda")
 
 model_name = "tts_models/multilingual/multi-dataset/xtts_v1.1"
@@ -49,7 +49,7 @@ app = FastAPI(
 
 
 @app.post("/clone_speaker")
-async def predict_speaker(wav_file: UploadFile):
+def predict_speaker(wav_file: UploadFile):
     """Compute conditioning inputs from reference audio file."""
     temp_audio_name = next(tempfile._get_candidate_names())
     with open(temp_audio_name, "wb") as temp, torch.inference_mode():
@@ -118,7 +118,7 @@ class StreamingInputs(BaseModel):
     decoder: str = "ne_hifigan"
 
 
-async def predict_streaming_generator(parsed_input: dict = Body(...)):
+def predict_streaming_generator(parsed_input: dict = Body(...)):
     speaker_embedding = (
         torch.tensor(parsed_input.speaker_embedding).unsqueeze(0).unsqueeze(-1)
     )
