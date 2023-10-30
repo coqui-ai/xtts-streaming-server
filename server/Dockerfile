@@ -1,7 +1,7 @@
 FROM pytorch/pytorch:2.0.1-cuda11.7-cudnn8-devel
 WORKDIR /app
-COPY requirements.txt .
-RUN python -m pip install -r requirements.txt --use-deprecated=legacy-resolver
+COPY requirements.frozen.txt .
+RUN python -m pip install --no-deps -r requirements.frozen.txt
 
 COPY main.py .
 
