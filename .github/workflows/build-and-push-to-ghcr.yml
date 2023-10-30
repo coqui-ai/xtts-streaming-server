@@ -4,7 +4,7 @@ on:
     branches: [main]
   pull_request:
 env:
-  GHCR_URL: ghcr.io/coqui-ai/xtts-streaming-server
+  GITHUB_OAUTH_TOKEN: ${{ secrets.GH_TOKEN }}
 jobs:
   build-and-push-to-ghcr:
     runs-on: ubuntu-22.04
@@ -42,5 +42,6 @@ jobs:
           cache-from: type=registry,ref=ghcr.io/coqui-ai/xtts-streaming-server:cache-latest
           cache-to: type=registry,ref=ghcr.io/coqui-ai/xtts-streaming-server:cache-latest
           tags: coqui-ai/xtts-streaming-server:latest, coqui-ai/xtts-streaming-server:main-${{ github.sha }}
-          #build-args:
+          build-args: |
+            GITHUB_OAUTH_TOKEN=${{ env.GITHUB_OAUTH_TOKEN }}
 
