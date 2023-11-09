@@ -1,4 +1,5 @@
 FROM pytorch/pytorch:2.0.1-cuda11.7-cudnn8-devel
+ARG DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && \
     apt-get install --no-install-recommends -y sox libsox-fmt-all curl wget gcc git git-lfs build-essential libaio-dev libsndfile1 ssh ffmpeg && \
