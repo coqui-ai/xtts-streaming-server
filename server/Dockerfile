@@ -1,8 +1,16 @@
 FROM pytorch/pytorch:2.0.1-cuda11.7-cudnn8-devel
+ARG DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && \
+    apt-get install --no-install-recommends -y sox libsox-fmt-all curl wget gcc git git-lfs build-essential libaio-dev libsndfile1 ssh ffmpeg && \
+    apt-get clean && apt-get -y autoremove
+
 WORKDIR /app
-COPY requirements.frozen.txt .
-RUN python -m pip install --no-deps -r requirements.frozen.txt \
+COPY requirements.txt .
+RUN python -m pip install --use-deprecated=legacy-resolver -r requirements.txt \
     && python -m pip cache purge
+
+RUN python -m unidic download
 
 COPY main.py .
 

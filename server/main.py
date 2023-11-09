@@ -23,7 +23,7 @@ from TTS.utils.manage import ModelManager
 torch.set_num_threads(int(os.environ.get("NUM_THREADS", "2")))
 device = torch.device("cuda")
 
-model_name = "tts_models/multilingual/multi-dataset/xtts_v1.1"
+model_name = "tts_models/multilingual/multi-dataset/xtts_v2"
 print("Downloading XTTS Model:",model_name,flush=True)
 ModelManager().download_model(model_name)
 model_path = os.path.join(get_user_data_dir("tts"), model_name.replace("/", "--"))
