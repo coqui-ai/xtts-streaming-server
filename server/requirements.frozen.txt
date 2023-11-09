@@ -149,3 +149,6 @@ watchfiles==0.21.0
 websockets==12.0
 Werkzeug==3.0.1
 yarl==1.9.2
+cutlet
+mecab-python3==1.0.6
+unidic-lite==1.0.8
