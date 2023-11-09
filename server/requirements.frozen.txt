@@ -136,7 +136,7 @@ trainer==0.0.31
 trampoline==0.1.2
 transformers==4.33.3
 triton==2.0.0
-TTS==0.19.1
+TTS==0.20.2
 types-dataclasses==0.6.6
 typing_extensions==4.8.0
 tzlocal==5.2
