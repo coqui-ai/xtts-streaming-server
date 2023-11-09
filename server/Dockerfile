@@ -9,6 +9,8 @@ COPY requirements.frozen.txt .
 RUN python -m pip install --no-deps -r requirements.frozen.txt \
     && python -m pip cache purge
 
+RUN python -m unidic download
+
 COPY main.py .
 
 ENV NUM_THREADS=2
