@@ -14,4 +14,3 @@ COPY main.py .
 ENV NUM_THREADS=2
 EXPOSE 80
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80"]
-fmpeg sox libsox-fmt-all
