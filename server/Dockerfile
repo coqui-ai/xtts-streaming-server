@@ -6,8 +6,8 @@ RUN apt-get update && \
     apt-get clean && apt-get -y autoremove
 
 WORKDIR /app
-COPY requirements.frozen.txt .
-RUN python -m pip install --no-deps -r requirements.frozen.txt \
+COPY requirements.txt .
+RUN python -m pip install --use-deprecated=legacy-resolver -r requirements.txt \
     && python -m pip cache purge
 
 RUN python -m unidic download
