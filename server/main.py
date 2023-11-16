@@ -54,7 +54,7 @@ def predict_speaker(wav_file: UploadFile):
     temp_audio_name = next(tempfile._get_candidate_names())
     with open(temp_audio_name, "wb") as temp, torch.inference_mode():
         temp.write(io.BytesIO(wav_file.file.read()).getbuffer())
-        gpt_cond_latent, _, speaker_embedding = model.get_conditioning_latents(
+        gpt_cond_latent, speaker_embedding = model.get_conditioning_latents(
             temp_audio_name
         )
     return {
@@ -110,12 +110,13 @@ class StreamingInputs(BaseModel):
         "nl",
         "cs",
         "ar",
-        "zh-cn",
+        "zh",
         "ja",
+        "hu",
+        "ko",
     ]
     add_wav_header: bool = True
     stream_chunk_size: str = "20"
-    decoder: str = "ne_hifigan"
 
 
 def predict_streaming_generator(parsed_input: dict = Body(...)):
@@ -127,16 +128,20 @@ def predict_streaming_generator(parsed_input: dict = Body(...)):
     )
     text = parsed_input.text
     language = parsed_input.language
-    decoder = parsed_input.decoder
-
-    if decoder not in ["ne_hifigan","hifigan"]:
-        decoder = "ne_hifigan"
 
     stream_chunk_size = int(parsed_input.stream_chunk_size)
     add_wav_header = parsed_input.add_wav_header
 
 
-    chunks = model.inference_stream(text, language, gpt_cond_latent, speaker_embedding, decoder=decoder,stream_chunk_size=stream_chunk_size)
+    chunks = model.inference_stream(
+        text,
+        language,
+        gpt_cond_latent,
+        speaker_embedding,
+        stream_chunk_size=stream_chunk_size,
+        enable_text_splitting=True
+    )
+
     for i, chunk in enumerate(chunks):
         chunk = postprocess(chunk)
         if i == 0 and add_wav_header:

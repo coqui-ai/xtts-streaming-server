@@ -38,11 +38,10 @@ def stream_ffplay(audio_stream, output_file, save=True):
     ffplay_proc.wait()
 
 
-def tts(text, speaker,language, server_url , decoder, stream_chunk_size) -> Iterator[bytes]:
+def tts(text, speaker, language, server_url, stream_chunk_size) -> Iterator[bytes]:
     start = time.perf_counter()
     speaker["text"] = text
     speaker["language"] = language
-    speaker["decoder"] = decoder  # "hifigan" or "ne_hifigan" for TTS>0.19.0
     speaker["stream_chunk_size"] = stream_chunk_size  # you can reduce it to get faster response, but degrade quality
     res = requests.post(
         f"{server_url}/tts_stream",
@@ -86,7 +85,6 @@ if __name__ == "__main__":
         default="en",
         help="Language to use default is 'en'  (English)"
     )
-
     parser.add_argument(
         "--output_file",
         default=None,
@@ -103,17 +101,10 @@ if __name__ == "__main__":
         help="Server url http://localhost:8000 default, change to your server location "
     )
     parser.add_argument(
-        "--decoder",
-        default="ne_hifigan",
-        help="Decoder for vocoder, ne_hifigan default, options ne_hifigan or hifigan"
-    )
-
-    parser.add_argument(
         "--stream_chunk_size",
         default="20",
         help="Stream chunk size , 20 default, reducing will get faster latency but may degrade quality"
     )
-
     args = parser.parse_args()
 
     with open("./default_speaker.json", "r") as file:
@@ -121,6 +112,16 @@ if __name__ == "__main__":
 
     if args.ref_file is not None:
         print("Computing the latents for a new reference...")
-        speaker = get_speaker(args.ref_file,args.server_url)
+        speaker = get_speaker(args.ref_file, args.server_url)
 
-    audio = stream_ffplay(tts(args.text, speaker,args.language,args.server_url,args.decoder,args.stream_chunk_size), args.output_file, save=bool(args.output_file))
+    audio = stream_ffplay(
+        tts(
+            args.text,
+            speaker,
+            args.language,
+            args.server_url,
+            args.stream_chunk_size
+        ), 
+        args.output_file,
+        save=bool(args.output_file)
+    )

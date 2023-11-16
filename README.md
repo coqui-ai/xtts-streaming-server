@@ -32,16 +32,16 @@ $ python test_streaming.py
 
 ## Building the container
 
-1. To build the Docker container (Pytorch 2.01 Cuda 11.7) :
+1. To build the Docker container Pytorch 2.1 and CUDA 11.8 :
 
 ```bash
 $ cd server
 $ docker build -t xtts-stream .
 ```
-For Pytorch 2.1 and CUDA 11.8 version (when running set NVIDIA_DISABLE_REQUIRE=1 if you have Cuda < 11.8 drivers) 
+For Pytorch 2.1 and CUDA 12.1 :
 ```bash
 $ cd server
-# docker build -t xtts-stream . -f Dockerfile.cuda118
+docker build -t xtts-stream . -f Dockerfile.cuda121
 ```
 2. Run the server container:
 
