@@ -2,15 +2,15 @@
 
 ## Running the server
 
-To run a pre-built container (CUDA 11.7):
+To run a pre-built container (CUDA 11.8):
 
 ```bash
 $ docker run --gpus=all -e COQUI_TOS_AGREED=1 --rm -p 8000:80 ghcr.io/coqui-ai/xtts-streaming-server:latest
 ```
 
-CUDA 11.8 version (for newer cards, tested on 4060 and L4 instance)
+CUDA 12.1 version (for newer cards) 
 ```bash
-$ docker run --gpus=all -e COQUI_TOS_AGREED=1 --rm -p 8000:80  ghcr.io/coqui-ai/xtts-streaming-server:latest-cuda118
+$ docker run --gpus=all -e COQUI_TOS_AGREED=1 --rm -p 8000:80  ghcr.io/coqui-ai/xtts-streaming-server:latest-cuda121
 ```
 
 If you have already downloaded v1.1 model and like to use this server, and using Ubuntu, change your /home/YOUR_USER_NAME
