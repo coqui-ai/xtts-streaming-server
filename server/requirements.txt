@@ -1,4 +1,4 @@
-TTS @ git+https://github.com/coqui-ai/TTS@sentence_spliting
+TTS @ git+https://github.com/coqui-ai/TTS@491f16ec3775182a458468c9745bbc101a4c5c95
 uvicorn[standard]==0.23.2
 fastapi==0.95.2
 deepspeed==0.10.3

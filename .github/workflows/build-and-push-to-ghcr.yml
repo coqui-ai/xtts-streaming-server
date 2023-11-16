@@ -27,7 +27,7 @@ jobs:
           sudo rm -rf "/usr/local/share/boost"
           sudo rm -rf "$AGENT_TOOLSDIRECTORY"
 
-      - name: Build only for PR Cuda 11.7
+      - name: Build only for PR Cuda 11.8
         if: github.ref != 'refs/heads/main'
         uses: docker/build-push-action@v5
         with:
@@ -37,7 +37,7 @@ jobs:
           cache-from: type=registry,ref=ghcr.io/coqui-ai/xtts-streaming-server:cache-latest; type=registry,ref=ghcr.io/coqui-ai/xtts-streaming-server:cache-pr-${{ github.event.number }}
           cache-to: type=registry,ref=ghcr.io/coqui-ai/xtts-streaming-server:cache-pr-${{ github.event.number }}
 
-      - name: Build and Push image Cuda 11.7
+      - name: Build and Push image Cuda 11.8
         if: github.ref == 'refs/heads/main'
         uses: docker/build-push-action@v5
         with:
