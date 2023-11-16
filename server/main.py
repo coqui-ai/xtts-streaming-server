@@ -54,7 +54,7 @@ def predict_speaker(wav_file: UploadFile):
     temp_audio_name = next(tempfile._get_candidate_names())
     with open(temp_audio_name, "wb") as temp, torch.inference_mode():
         temp.write(io.BytesIO(wav_file.file.read()).getbuffer())
-        gpt_cond_latent, _, speaker_embedding = model.get_conditioning_latents(
+        gpt_cond_latent, speaker_embedding = model.get_conditioning_latents(
             temp_audio_name
         )
     return {
@@ -110,8 +110,10 @@ class StreamingInputs(BaseModel):
         "nl",
         "cs",
         "ar",
-        "zh-cn",
+        "zh",
         "ja",
+        "hu",
+        "ko",
     ]
     add_wav_header: bool = True
     stream_chunk_size: str = "20"
