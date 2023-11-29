@@ -46,8 +46,21 @@ docker build -t xtts-stream . -f Dockerfile.cuda121
 2. Run the server container:
 
 ```bash
-$ docker run --gpus=all -e COQUI_TOS_AGREED=1 --rm -p 8000:80 xtts-stream
+$ docker run --gpus all -e COQUI_TOS_AGREED=1 --rm -p 8000:80 xtts-stream
 ```
 
 Setting the `COQUI_TOS_AGREED` environment variable to `1` indicates you have read and agreed to
 the terms of the [CPML license](https://coqui.ai/cpml).
+
+2. (bis) Run the server container with your own model:
+
+```bash
+docker run -v /path/to/model/folder:/app/tts_models --gpus all --rm -p 8000:80 xtts-stream
+```
+
+Make sure the model folder contains the following files:
+- `config.json`
+- `model.pth`
+- `vocab.json`
+
+(Fine-tuned XTTS models also are under the [CPML license](https://coqui.ai/cpml))
