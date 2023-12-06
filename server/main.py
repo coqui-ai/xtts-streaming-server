@@ -164,3 +164,48 @@ def predict_streaming_endpoint(parsed_input: StreamingInputs):
         predict_streaming_generator(parsed_input),
         media_type="audio/wav",
     )
+
+class TTSInputs(BaseModel):
+    speaker_embedding: List[float]
+    gpt_cond_latent: List[List[float]]
+    text: str
+    language: Literal[
+        "en",
+        "de",
+        "fr",
+        "es",
+        "it",
+        "pl",
+        "pt",
+        "tr",
+        "ru",
+        "nl",
+        "cs",
+        "ar",
+        "zh",
+        "ja",
+        "hu",
+        "ko",
+    ]
+
+@app.post("/tts")
+def predict_speech(parsed_input: TTSInputs):
+    speaker_embedding = (
+        torch.tensor(parsed_input.speaker_embedding).unsqueeze(0).unsqueeze(-1)
+    ).cuda()
+    gpt_cond_latent = (
+        torch.tensor(parsed_input.gpt_cond_latent).reshape((-1, 1024)).unsqueeze(0)
+    ).cuda()
+    text = parsed_input.text
+    language = parsed_input.language
+
+    out = model.inference(
+        text,
+        language,
+        gpt_cond_latent,
+        speaker_embedding,
+    )
+
+    wav = postprocess(torch.tensor(out["wav"]))
+
+    return encode_audio_common(wav.tobytes())
