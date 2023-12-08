@@ -199,5 +199,5 @@ def get_speakers():
         return {}
         
 @app.get("/languages")
-def get_speakers():
+def get_languages():
     return config.languages
