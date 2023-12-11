@@ -25,10 +25,10 @@ elif os.path.exists(os.path.join(OUTPUT, "cloned_speakers")):
 
 try:
     print("Getting metadata from server ...")
-    STUDIO_SPEAKERS = requests.get(SERVER_URL + "/studio_speakers").json()
-    print("Available studio speakers:", ", ".join(STUDIO_SPEAKERS.keys()))
     LANUGAGES = requests.get(SERVER_URL + "/languages").json()
     print("Available languages:", ", ".join(LANUGAGES))
+    STUDIO_SPEAKERS = requests.get(SERVER_URL + "/studio_speakers").json()
+    print("Available studio speakers:", ", ".join(STUDIO_SPEAKERS.keys()))
 except:
     raise Exception("Please make sure the server is running first.")
 
@@ -101,7 +101,7 @@ with gr.Blocks() as demo:
 if __name__ == "__main__":
     demo.launch(
         share=False,
-        debug=True,
+        debug=False,
         server_port=3009,
         server_name="0.0.0.0",
     )
