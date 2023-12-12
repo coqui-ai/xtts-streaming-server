@@ -25,7 +25,14 @@ the terms of the [CPML license](https://coqui.ai/cpml).
 
 ## Testing the server
 
-1. Generate audio with the test script:
+### Using the gradio demo
+
+```bash
+$ python -m pip install -r test/requirements.txt
+$ python demo.py
+```
+
+### Using the test script
 
 ```bash
 $ cd test
