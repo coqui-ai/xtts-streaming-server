@@ -36,12 +36,6 @@ else:
     model_path = os.path.join(get_user_data_dir("tts"), model_name.replace("/", "--"))
     print("XTTS Model downloaded", flush=True)
 
-    # Temporary fix, to wait for the TTS update
-    import requests
-    speakers = requests.get("https://huggingface.co/coqui/XTTS-v2/resolve/main/speakers.pth")
-    with open(os.path.join(model_path, "speakers.pth"), "wb") as fp:
-        fp.write(speakers.content)
-
 print("Loading XTTS", flush=True)
 config = XttsConfig()
 config.load_json(os.path.join(model_path, "config.json"))
@@ -185,15 +179,13 @@ def predict_speech(parsed_input: TTSInputs):
 
 @app.get("/studio_speakers")
 def get_speakers():
-    speaker_file = os.path.join(model_path, "speakers.pth")
-    if os.path.isfile(speaker_file):
-        speakers = torch.load(speaker_file)
+    if hasattr(model, "speaker_manager") and hasattr(model.speaker_manager, "speakers"):
         return {
             speaker: {
-                "speaker_embedding": speakers[speaker]["speaker_embedding"].cpu().squeeze().half().tolist(),
-                "gpt_cond_latent": speakers[speaker]["gpt_cond_latent"].cpu().squeeze().half().tolist(),
+                "speaker_embedding": model.speaker_manager.speakers[speaker]["speaker_embedding"].cpu().squeeze().half().tolist(),
+                "gpt_cond_latent": model.speaker_manager.speakers[speaker]["gpt_cond_latent"].cpu().squeeze().half().tolist(),
             }
-            for speaker in speakers.keys()
+            for speaker in model.speaker_manager.speakers.keys()
         }
     else:
         return {}
