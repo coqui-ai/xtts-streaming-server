@@ -31,20 +31,20 @@ if os.path.exists(custom_model_path) and os.path.isfile(custom_model_path + "/co
 else:
     print("Loading default model", flush=True)
     model_name = "tts_models/multilingual/multi-dataset/xtts_v2"
-    print("Downloading XTTS Model:",model_name, flush=True)
+    print("Downloading XTTS Model:", model_name, flush=True)
     ModelManager().download_model(model_name)
     model_path = os.path.join(get_user_data_dir("tts"), model_name.replace("/", "--"))
-    print("XTTS Model downloaded",flush=True)
+    print("XTTS Model downloaded", flush=True)
 
-print("Loading XTTS",flush=True)
+print("Loading XTTS", flush=True)
 config = XttsConfig()
 config.load_json(os.path.join(model_path, "config.json"))
 model = Xtts.init_from_config(config)
 model.load_checkpoint(config, checkpoint_dir=model_path, eval=True, use_deepspeed=True)
 model.to(device)
-print("XTTS Loaded.",flush=True)
+print("XTTS Loaded.", flush=True)
 
-print("Running XTTS Server ...",flush=True)
+print("Running XTTS Server ...", flush=True)
 
 ##### Run fastapi #####
 app = FastAPI(
@@ -104,24 +104,7 @@ class StreamingInputs(BaseModel):
     speaker_embedding: List[float]
     gpt_cond_latent: List[List[float]]
     text: str
-    language: Literal[
-        "en",
-        "de",
-        "fr",
-        "es",
-        "it",
-        "pl",
-        "pt",
-        "tr",
-        "ru",
-        "nl",
-        "cs",
-        "ar",
-        "zh",
-        "ja",
-        "hu",
-        "ko",
-    ]
+    language: str
     add_wav_header: bool = True
     stream_chunk_size: str = "20"
 
@@ -164,3 +147,49 @@ def predict_streaming_endpoint(parsed_input: StreamingInputs):
         predict_streaming_generator(parsed_input),
         media_type="audio/wav",
     )
+
+class TTSInputs(BaseModel):
+    speaker_embedding: List[float]
+    gpt_cond_latent: List[List[float]]
+    text: str
+    language: str
+
+@app.post("/tts")
+def predict_speech(parsed_input: TTSInputs):
+    speaker_embedding = (
+        torch.tensor(parsed_input.speaker_embedding).unsqueeze(0).unsqueeze(-1)
+    ).cuda()
+    gpt_cond_latent = (
+        torch.tensor(parsed_input.gpt_cond_latent).reshape((-1, 1024)).unsqueeze(0)
+    ).cuda()
+    text = parsed_input.text
+    language = parsed_input.language
+
+    out = model.inference(
+        text,
+        language,
+        gpt_cond_latent,
+        speaker_embedding,
+    )
+
+    wav = postprocess(torch.tensor(out["wav"]))
+
+    return encode_audio_common(wav.tobytes())
+
+
+@app.get("/studio_speakers")
+def get_speakers():
+    if hasattr(model, "speaker_manager") and hasattr(model.speaker_manager, "speakers"):
+        return {
+            speaker: {
+                "speaker_embedding": model.speaker_manager.speakers[speaker]["speaker_embedding"].cpu().squeeze().half().tolist(),
+                "gpt_cond_latent": model.speaker_manager.speakers[speaker]["gpt_cond_latent"].cpu().squeeze().half().tolist(),
+            }
+            for speaker in model.speaker_manager.speakers.keys()
+        }
+    else:
+        return {}
+        
+@app.get("/languages")
+def get_languages():
+    return config.languages

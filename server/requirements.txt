@@ -1,4 +1,4 @@
-TTS @ git+https://github.com/coqui-ai/TTS@00a870c26abdc06429ffef3e2814b1a1d5b40fff
+TTS @ git+https://github.com/coqui-ai/TTS@fa28f99f1508b5b5366539b2149963edcb80ba62
 uvicorn[standard]==0.23.2
 fastapi==0.95.2
 deepspeed==0.10.3
