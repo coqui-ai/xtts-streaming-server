@@ -93,3 +93,47 @@ jobs:
           cache-to: type=registry,ref=ghcr.io/coqui-ai/xtts-streaming-server:cache-latest-cuda121
           tags: ghcr.io/coqui-ai/xtts-streaming-server:latest-cuda121, ghcr.io/coqui-ai/xtts-streaming-server:main-cuda121-${{ github.sha }}
           #build-args:
+  build-and-push-to-ghcr-cpu:
+    runs-on: ubuntu-22.04
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v3
+
+      -
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: 'Login to GitHub Container Registry'
+        run: |
+          set -xe
+          docker login --username ${{ github.actor }} --password ${{ secrets.GITHUB_TOKEN }} ghcr.io
+
+      - name: 'Remove cache'
+        run: | 
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf "/usr/local/share/boost"
+          sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+
+      - name: Build only for PR CPU
+        if: github.ref != 'refs/heads/main'
+        uses: docker/build-push-action@v5
+        with:
+          context: "{{defaultContext}}:server"
+          file: Dockerfile.cpu
+          push: false # Do not push image for PR
+          cache-from: type=registry,ref=ghcr.io/coqui-ai/xtts-streaming-server:cache-latest-cpu; type=registry,ref=ghcr.io/coqui-ai/xtts-streaming-server:cache-pr-cuda121-${{ github.event.number }}
+          cache-to: type=registry,ref=ghcr.io/coqui-ai/xtts-streaming-server:cache-pr-cpu-${{ github.event.number }}
+
+      - name: Build and Push image CPU
+        if: github.ref == 'refs/heads/main'
+        uses: docker/build-push-action@v5
+        with:
+          context: "{{defaultContext}}:server"
+          file: Dockerfile.cpu
+          push: true # Push if merged
+          cache-from: type=registry,ref=ghcr.io/coqui-ai/xtts-streaming-server:cache-latest-cpu
+          cache-to: type=registry,ref=ghcr.io/coqui-ai/xtts-streaming-server:cache-latest-cpu
+          tags: ghcr.io/coqui-ai/xtts-streaming-server:latest-cpu, ghcr.io/coqui-ai/xtts-streaming-server:main-cpu-${{ github.sha }}
+          #build-args:
