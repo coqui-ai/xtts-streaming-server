@@ -36,7 +36,7 @@ $ docker run -v /path/to/model/folder:/app/tts_models --gpus=all -e COQUI_TOS_AG
 Setting the `COQUI_TOS_AGREED` environment variable to `1` indicates you have read and agreed to
 the terms of the [CPML license](https://coqui.ai/cpml). (Fine-tuned XTTS models also are under the [CPML license](https://coqui.ai/cpml))
 
-## Build the image yourself
+### Build the image yourself
 
 To build the Docker container Pytorch 2.1 and CUDA 11.8 :
 
