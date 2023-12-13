@@ -2,17 +2,13 @@ import base64
 import io
 import os
 import tempfile
-from typing import List, Literal
 import wave
-
-import numpy as np
 import torch
-from fastapi import (
-    FastAPI,
-    UploadFile,
-    Body,
-)
+import numpy as np
+from typing import List
 from pydantic import BaseModel
+
+from fastapi import FastAPI, UploadFile, Body
 from fastapi.responses import StreamingResponse
 
 from TTS.tts.configs.xtts_config import XttsConfig
@@ -20,7 +16,7 @@ from TTS.tts.models.xtts import Xtts
 from TTS.utils.generic_utils import get_user_data_dir
 from TTS.utils.manage import ModelManager
 
-torch.set_num_threads(int(os.environ.get("NUM_THREADS", "2")))
+torch.set_num_threads(int(os.environ.get("NUM_THREADS", os.cpu_count())))
 device = torch.device("cuda" if os.environ.get("USE_CPU", "0") == "0" else "cpu")
 if not torch.cuda.is_available() and device == "cuda":
     raise RuntimeError("CUDA device unavailable, please use Dockerfile.cpu instead.") 

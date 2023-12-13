@@ -1,4 +1,4 @@
-FROM pytorch/pytorch:2.1.0-cuda11.8-cudnn8-devel
+FROM python:3.11.7
 ARG DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && \
@@ -16,6 +16,5 @@ RUN mkdir -p /app/tts_models
 COPY main.py .
 ENV USE_CPU=1
 
-ENV NUM_THREADS=2
 EXPOSE 80
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80"]
