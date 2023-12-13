@@ -21,7 +21,9 @@ from TTS.utils.generic_utils import get_user_data_dir
 from TTS.utils.manage import ModelManager
 
 torch.set_num_threads(int(os.environ.get("NUM_THREADS", "2")))
-device = torch.device("cuda")
+device = torch.device("cuda" if os.environ.get("USE_CPU", "0") == "0" else "cpu")
+if not torch.cuda.is_available() and device == "cuda":
+    raise RuntimeError("CUDA device unavailable, please use Dockerfile.cpu instead.") 
 
 custom_model_path = os.environ.get("CUSTOM_MODEL_PATH", "/app/tts_models")
 
@@ -40,7 +42,7 @@ print("Loading XTTS", flush=True)
 config = XttsConfig()
 config.load_json(os.path.join(model_path, "config.json"))
 model = Xtts.init_from_config(config)
-model.load_checkpoint(config, checkpoint_dir=model_path, eval=True, use_deepspeed=True)
+model.load_checkpoint(config, checkpoint_dir=model_path, eval=True, use_deepspeed=True if device == "cuda" else False)
 model.to(device)
 print("XTTS Loaded.", flush=True)
 
