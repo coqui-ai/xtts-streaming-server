@@ -99,6 +99,20 @@ with gr.Blocks() as demo:
     )
 
 if __name__ == "__main__":
+    print("Warming up server...")
+    with open("test/default_speaker.json", "r") as fp:
+        warmup_speaker = json.load(fp)
+    resp = requests.post(
+        SERVER_URL + "/tts",
+        json={
+            "text": "This is a warmup request.",
+            "language": "en",
+            "speaker_embedding": warmup_speaker["speaker_embedding"],
+            "gpt_cond_latent": warmup_speaker["gpt_cond_latent"],
+        }
+    )
+    resp.raise_for_status()
+    print("Starting the demo...")
     demo.launch(
         share=False,
         debug=False,
