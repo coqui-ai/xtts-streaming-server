@@ -1,0 +1,11 @@
+TTS @ git+https://github.com/coqui-ai/TTS@fa28f99f1508b5b5366539b2149963edcb80ba62
+uvicorn[standard]==0.23.2
+fastapi==0.95.2
+pydantic==1.10.13
+python-multipart==0.0.6
+typing-extensions>=4.8.0
+numpy==1.24.3
+cutlet
+mecab-python3==1.0.6
+unidic-lite==1.0.8
+unidic==1.1.0
