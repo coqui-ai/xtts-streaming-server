@@ -7,21 +7,19 @@ jobs:
   build-and-push-to-ghcr-cuda118:
     runs-on: ubuntu-22.04
     steps:
-      -
-        name: Checkout
+      - name: Checkout
         uses: actions/checkout@v3
 
-      -
-        name: Set up Docker Buildx
+      - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: 'Login to GitHub Container Registry'
+      - name: "Login to GitHub Container Registry"
         run: |
           set -xe
           docker login --username ${{ github.actor }} --password ${{ secrets.GITHUB_TOKEN }} ghcr.io
 
-      - name: 'Remove cache'
-        run: | 
+      - name: "Remove cache"
+        run: |
           sudo rm -rf /usr/share/dotnet
           sudo rm -rf /opt/ghc
           sudo rm -rf "/usr/local/share/boost"
@@ -34,8 +32,8 @@ jobs:
           context: "{{defaultContext}}:server"
           file: Dockerfile
           push: false # Do not push image for PR
-          cache-from: type=registry,ref=ghcr.io/coqui-ai/xtts-streaming-server:cache-latest; type=registry,ref=ghcr.io/coqui-ai/xtts-streaming-server:cache-pr-${{ github.event.number }}
-          cache-to: type=registry,ref=ghcr.io/coqui-ai/xtts-streaming-server:cache-pr-${{ github.event.number }}
+          cache-from: type=registry,ref=ghcr.io/dialohq/xtts-streaming-server:cache-latest; type=registry,ref=ghcr.io/dialohq/xtts-streaming-server:cache-pr-${{ github.event.number }}
+          cache-to: type=registry,ref=ghcr.io/dialohq/xtts-streaming-server:cache-pr-${{ github.event.number }}
 
       - name: Build and Push image Cuda 11.8
         if: github.ref == 'refs/heads/main'
@@ -44,29 +42,27 @@ jobs:
           context: "{{defaultContext}}:server"
           file: Dockerfile
           push: true # Push if merged
-          cache-from: type=registry,ref=ghcr.io/coqui-ai/xtts-streaming-server:cache-latest
-          cache-to: type=registry,ref=ghcr.io/coqui-ai/xtts-streaming-server:cache-latest
-          tags: ghcr.io/coqui-ai/xtts-streaming-server:latest, ghcr.io/coqui-ai/xtts-streaming-server:main-${{ github.sha }}
+          cache-from: type=registry,ref=ghcr.io/dialohq/xtts-streaming-server:cache-latest
+          cache-to: type=registry,ref=ghcr.io/dialohq/xtts-streaming-server:cache-latest
+          tags: ghcr.io/dialohq/xtts-streaming-server:latest, ghcr.io/dialohq/xtts-streaming-server:main-${{ github.sha }}
           #build-args:
 
   build-and-push-to-ghcr-cuda121:
     runs-on: ubuntu-22.04
     steps:
-      -
-        name: Checkout
+      - name: Checkout
         uses: actions/checkout@v3
 
-      -
-        name: Set up Docker Buildx
+      - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: 'Login to GitHub Container Registry'
+      - name: "Login to GitHub Container Registry"
         run: |
           set -xe
           docker login --username ${{ github.actor }} --password ${{ secrets.GITHUB_TOKEN }} ghcr.io
 
-      - name: 'Remove cache'
-        run: | 
+      - name: "Remove cache"
+        run: |
           sudo rm -rf /usr/share/dotnet
           sudo rm -rf /opt/ghc
           sudo rm -rf "/usr/local/share/boost"
@@ -79,8 +75,8 @@ jobs:
           context: "{{defaultContext}}:server"
           file: Dockerfile.cuda121
           push: false # Do not push image for PR
-          cache-from: type=registry,ref=ghcr.io/coqui-ai/xtts-streaming-server:cache-latest-cuda121; type=registry,ref=ghcr.io/coqui-ai/xtts-streaming-server:cache-pr-cuda121-${{ github.event.number }}
-          cache-to: type=registry,ref=ghcr.io/coqui-ai/xtts-streaming-server:cache-pr-cuda121-${{ github.event.number }}
+          cache-from: type=registry,ref=ghcr.io/dialohq/xtts-streaming-server:cache-latest-cuda121; type=registry,ref=ghcr.io/dialohq/xtts-streaming-server:cache-pr-cuda121-${{ github.event.number }}
+          cache-to: type=registry,ref=ghcr.io/dialohq/xtts-streaming-server:cache-pr-cuda121-${{ github.event.number }}
 
       - name: Build and Push image cuda 12.1
         if: github.ref == 'refs/heads/main'
@@ -89,28 +85,26 @@ jobs:
           context: "{{defaultContext}}:server"
           file: Dockerfile.cuda121
           push: true # Push if merged
-          cache-from: type=registry,ref=ghcr.io/coqui-ai/xtts-streaming-server:cache-latest-cuda121
-          cache-to: type=registry,ref=ghcr.io/coqui-ai/xtts-streaming-server:cache-latest-cuda121
-          tags: ghcr.io/coqui-ai/xtts-streaming-server:latest-cuda121, ghcr.io/coqui-ai/xtts-streaming-server:main-cuda121-${{ github.sha }}
+          cache-from: type=registry,ref=ghcr.io/dialohq/xtts-streaming-server:cache-latest-cuda121
+          cache-to: type=registry,ref=ghcr.io/dialohq/xtts-streaming-server:cache-latest-cuda121
+          tags: ghcr.io/dialohq/xtts-streaming-server:latest-cuda121, ghcr.io/dialohq/xtts-streaming-server:main-cuda121-${{ github.sha }}
           #build-args:
   build-and-push-to-ghcr-cpu:
     runs-on: ubuntu-22.04
     steps:
-      -
-        name: Checkout
+      - name: Checkout
         uses: actions/checkout@v3
 
-      -
-        name: Set up Docker Buildx
+      - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: 'Login to GitHub Container Registry'
+      - name: "Login to GitHub Container Registry"
         run: |
           set -xe
           docker login --username ${{ github.actor }} --password ${{ secrets.GITHUB_TOKEN }} ghcr.io
 
-      - name: 'Remove cache'
-        run: | 
+      - name: "Remove cache"
+        run: |
           sudo rm -rf /usr/share/dotnet
           sudo rm -rf /opt/ghc
           sudo rm -rf "/usr/local/share/boost"
@@ -123,8 +117,8 @@ jobs:
           context: "{{defaultContext}}:server"
           file: Dockerfile.cpu
           push: false # Do not push image for PR
-          cache-from: type=registry,ref=ghcr.io/coqui-ai/xtts-streaming-server:cache-latest-cpu; type=registry,ref=ghcr.io/coqui-ai/xtts-streaming-server:cache-pr-cuda121-${{ github.event.number }}
-          cache-to: type=registry,ref=ghcr.io/coqui-ai/xtts-streaming-server:cache-pr-cpu-${{ github.event.number }}
+          cache-from: type=registry,ref=ghcr.io/dialohq/xtts-streaming-server:cache-latest-cpu; type=registry,ref=ghcr.io/dialohq/xtts-streaming-server:cache-pr-cuda121-${{ github.event.number }}
+          cache-to: type=registry,ref=ghcr.io/dialohq/xtts-streaming-server:cache-pr-cpu-${{ github.event.number }}
 
       - name: Build and Push image CPU
         if: github.ref == 'refs/heads/main'
@@ -133,7 +127,7 @@ jobs:
           context: "{{defaultContext}}:server"
           file: Dockerfile.cpu
           push: true # Push if merged
-          cache-from: type=registry,ref=ghcr.io/coqui-ai/xtts-streaming-server:cache-latest-cpu
-          cache-to: type=registry,ref=ghcr.io/coqui-ai/xtts-streaming-server:cache-latest-cpu
-          tags: ghcr.io/coqui-ai/xtts-streaming-server:latest-cpu, ghcr.io/coqui-ai/xtts-streaming-server:main-cpu-${{ github.sha }}
+          cache-from: type=registry,ref=ghcr.io/dialohq/xtts-streaming-server:cache-latest-cpu
+          cache-to: type=registry,ref=ghcr.io/dialohq/xtts-streaming-server:cache-latest-cpu
+          tags: ghcr.io/dialohq/xtts-streaming-server:latest-cpu, ghcr.io/dialohq/xtts-streaming-server:main-cpu-${{ github.sha }}
           #build-args:
