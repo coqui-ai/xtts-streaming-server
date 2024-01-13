@@ -105,6 +105,10 @@ class StreamingInputs(BaseModel):
     language: str
     add_wav_header: bool = True
     stream_chunk_size: str = "20"
+    top_p:float
+    top_k:float
+    temperature:float
+    speeed:float
 
 
 def predict_streaming_generator(parsed_input: dict = Body(...)):
@@ -116,14 +120,22 @@ def predict_streaming_generator(parsed_input: dict = Body(...)):
     stream_chunk_size = int(parsed_input.stream_chunk_size)
     add_wav_header = parsed_input.add_wav_header
 
-
+    top_p = parsed_input.top_p
+    top_k = parsed_input.top_k
+    temperature = parsed_input.temperature
+    speed = parsed_input.speed
+    
     chunks = model.inference_stream(
         text,
         language,
         gpt_cond_latent,
         speaker_embedding,
         stream_chunk_size=stream_chunk_size,
-        enable_text_splitting=True
+        enable_text_splitting=True,
+        top_k=top_k,
+        top_p=top_p,
+        speed=speed,
+        temperature=temperature
     )
 
     for i, chunk in enumerate(chunks):
@@ -183,3 +195,6 @@ def get_speakers():
 @app.get("/languages")
 def get_languages():
     return config.languages
+
+
+
