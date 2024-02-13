@@ -1,5 +1,5 @@
 # XTTS streaming server
-
+*Warning: XTTS-streaming-server doesn't support concurrent streaming requests, it's a demo server, not meant for production.*
 
 https://github.com/coqui-ai/xtts-streaming-server/assets/17219561/7220442a-e88a-4288-8a73-608c4b39d06c
 
